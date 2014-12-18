@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../lamda.js"></script>
+</head>
+<body>
+
+
+<script type="text/javascript">
+    //Filter, map, consume List
+    var list1 = ["eff", "james","josephine", "Ash"];
+    lamda
+            .from(list1)
+            .filter("it -> it.length > 3")
+            .map("name -> 'hello ' + name")
+            .forEach("console.log(it)");
+</script>
+
+
+<script type="text/javascript">
+
+    var list1 = ["eff", "james","josephine", "Ash"];
+    var l2 = lamda
+            .from(list1)
+            .filter("name -> name.length > 3")
+            .toList();
+
+    console.log("returns a filtered list", l2);
+</script>
+
+
+<script type="text/javascript">
+
+    var list1 = ["eff", "james","josephine", "Ash"];
+    var defaultValue = "no results";
+    var l3 = lamda
+            .from(list1)
+            .filter("name -> name.length > 1000")
+            .first(defaultValue);
+
+    console.log("Gets the first element in the list or else returns default value", l3);
+</script>
+
+<script type="text/javascript">
+    var list2 = [
+        {"name":"eff", "gender":"M"},
+        {name:"james", "gender":"M"},
+        {name:"josephine", "gender":"MF"},
+        {name:"conny", gender: "F"},
+        {name:"Ash", "gender":"M"}
+    ];
+    var l4 = lamda
+            .from(list2)
+            .groupBy("person -> person.gender");
+
+    console.log("Group Data", l4);
+</script>
+
+<script type="text/javascript">
+
+    var list1 = ["eff", "james","josephine", "Ash"];
+    var l5 = lamda
+            .from(list1)
+            .limit(2)
+            .toList();
+
+    console.log("limit list", l5);
+</script>
+
+</body>
+</html>
