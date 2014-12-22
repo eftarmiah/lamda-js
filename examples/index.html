@@ -24,7 +24,7 @@
     var list1 = ["eff", "james","josephine", "Ash"];
     var l2 = lamda
             .from(list1)
-            .filter("name -> name.length > 3")
+            .filter("name2:string -> name.length > 3")
             .toList();
 
     console.log("returns a filtered list", l2);

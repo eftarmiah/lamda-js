@@ -20,15 +20,73 @@
         };
     }
 
+    /**
+     * This function generates a metadata object for the lamda parameters.
+     * The object specifies if a parameter can have a type.
+     *
+     * @param str incoming lamda parameter with types
+     * @returns {{paramType: {name:type}, paramNames: Array}}
+     */
+    var paramertizer = function (str) {
+        var res = {
+            paramType: {},
+            paramNames:[]
+        };
+        if (str === "it") {
+            res.paramNames.push(str);
+            res.paramType[str] = null;
+        } else {
+            var list = str.split(",");
+            for (var n = 0; n < list.length; n++) {
+                var tuple = list[n].split(":");
+                var name = tuple[0].trim();
+                var type = tuple.length > 1 ? tuple[1].trim() : null;
+
+                res.paramNames.push(name);
+                res.paramType[name] = type;
+            }
+        }
+        return res;
+    };
+
+    /**
+     * This functions implements type checking.
+     *
+     * @param func
+     * @param paramMetadata
+     * @returns {Function}
+     */
+    var createTypedFunction = function (func, paramMetadata) {
+        var proxy = function() {
+            for (var n = 0; n< arguments.length; n++) {
+                var val = arguments[n];
+                var name = paramMetadata.paramNames[n];
+                var type = paramMetadata.paramType[name];
+
+                if (type != null) {
+                    if (typeof val !== type) {
+                        throw "param "+name+" should be type "+ type + " not " + (typeof val);
+                    }
+                }
+            }
+
+            func.call(this, arguments);
+        };
+        return proxy;
+    };
+
     var lamda2Function = function (str, isReturn) {
         var tuple = str.split("->");
-        var params = tuple.length >1 ? tuple[0]:"it";
+        var params = tuple.length > 1 ? tuple[0]:"it";
+        var paramMetadata = paramertizer(params);
+        params = paramMetadata.paramNames.join(", ");
+
         var body = tuple.length > 1 ? tuple[1]: tuple[0];
         var returnStmt = isReturn === true ? "return" : "";
 
         var fnStr = "(function ("+params+") { "+returnStmt+" "+body+";})";
         var fn = eval(fnStr);
-        return fn;
+        return createTypedFunction(fn, paramMetadata);
     };
 
     var lamda = function() {};
